@@ -8,6 +8,7 @@ OUTPUT_DIR=/secrets
 CA_DIR=$OUTPUT_DIR/certificate_authority
 KEYSTORES_DIR=$OUTPUT_DIR/keystores
 CERT_DIR=$OUTPUT_DIR/certificates
+TOKEN_DIR=$OUTPUT_DIR/tokens
 CA_P12=$CA_DIR/elastic-stack-ca.p12
 CA_ZIP=$CA_DIR/ca.zip
 CA_CERT=$CA_DIR/ca/ca.crt
@@ -16,7 +17,7 @@ BUNDLE_ZIP=$OUTPUT_DIR/bundle.zip
 CERT_KEYSTORES_ZIP=$OUTPUT_DIR/cert_keystores.zip
 HTTP_ZIP=$OUTPUT_DIR/http.zip
 
-apt-get install unzip openssl -y
+# apt-get install unzip openssl -y
 
 create_self_signed_ca()
 {
@@ -71,6 +72,21 @@ create_keystore()
     mv $NATIVE_FILE $OUTPUT_FILE
     chmod 0644 $OUTPUT_FILE
 
+    # Generating Service Token for Kibana
+    # KIBANA_SERVICE_TOKEN=`bin/elasticsearch-service-tokens create elastic/kibana kibana-system-token`
+    # echo "Service Token"
+    # echo $KIBANA_SERVICE_TOKEN
+    # cat $CONFIG_DIR/service_tokens
+    # cp $CONFIG_DIR/service_tokens $TOKEN_DIR/service_tokens
+    # PARSED_TOKEN=(${KIBANA_SERVICE_TOKEN//=/ })
+    # export ELASTIC_SERVICE_ACCOUNT_TOKEN=${PARSED_TOKEN[2]}
+
+    # cp /.env /env
+    # sed -i '/ELASTIC_SERVICE_ACCOUNT_TOKEN/d' /env
+    # sleep 2
+    # echo 'ELASTIC_SERVICE_ACCOUNT_TOKEN='${PARSED_TOKEN[2]} >> /env
+    # cat /env > /.env
+    
     printf "======= Keystore setup completed successfully =======\n"
     printf "=====================================================\n"
 }
@@ -102,6 +118,8 @@ create_directory_structure()
     mkdir $KEYSTORES_DIR
     echo "Creating Certificates Directory..."
     mkdir $CERT_DIR
+    echo "Creating Token Directory"
+    mkdir $TOKEN_DIR
 }
 
 rename_swag_confs()

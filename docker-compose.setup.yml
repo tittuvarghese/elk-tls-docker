@@ -11,12 +11,12 @@ services:
       - ./secrets:/secrets/
       - ./setup/setup.sh:${ELASTIC_DIR}/config/setup.sh
       - ./setup/instances.yml:${ELASTIC_DIR}/config/instances.yml:ro
-    environment: 
+    environment:
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       SUBDOMAIN: ${SUBDOMAIN}
       SUBFOLDER: ${SUBFOLDER}
       STAGING: ${STAGING}
-    networks: 
+    networks:
       - elk
 
 volumes:
