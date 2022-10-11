@@ -1,0 +1,78 @@
+heartbeat.config.monitors:
+  # Directory + glob pattern to search for configuration files
+  path: ${CONFIG_DIR}/monitors.d/*.yml
+  # If enabled, heartbeat will periodically check the config.monitors path for changes
+  reload.enabled: false
+  # How often to check for changes
+  reload.period: 5s
+
+heartbeat.monitors:
+#Monitor all containers using an icmp ping
+- type: icmp
+  name: Monitroing Stack - ICMP - HYD-DC-1
+  schedule: '*/5 * * * * * *'
+  hosts: ["elasticsearch1.elasticsearch","elasticsearch2.elasticsearch","elasticsearch3.elasticsearch","kibana"]
+  ipv4: true
+  ipv6: true
+  mode: any
+  timeout: 3s
+  wait: 1s
+
+#Monitor the Elasticsearch instance.
+- type: http
+  name: Elasticsearch - HYD-DC-1
+  enabled: true
+  schedule: '@every 5s'
+  urls: ["https://elasticsearch1.elasticsearch:9200", "https://elasticsearch2.elasticsearch:9200", "https://elasticsearch3.elasticsearch:9200"]
+  ipv4: true
+  ipv6: true
+  mode: any
+  timeout: 3s
+  username: '${BEATS_USERNAME}'
+  password: '${BEATS_PASSWORD}'
+  check.request:
+    method: "GET"
+  check.response:
+    status: 200
+  ssl.certificate_authorities: [ "${CONFIG_DIR}/ca.crt" ]
+
+
+#Monitor the Kibana instance.
+- type: http
+  name: Kibana - HYD-DC-1
+  enabled: true
+  schedule: '@every 5s'
+  urls: ["https://kibana:5601"]
+  max_redirects: 2
+  ipv4: true
+  mode: any
+  timeout: 3s
+  check.request:
+    method: "GET"
+  check.response:
+    status: 200
+  ssl.certificate_authorities: [ "${CONFIG_DIR}/ca.crt" ]
+
+processors:
+- add_docker_metadata: ~
+- add_observer_metadata:
+    cache.ttl: 5m
+    geo:
+      name: hyderabad-dc-1
+      country_iso_code: IN
+      region_name: Hyderabad
+      region_iso_code: HYD
+      city_name: Hyderabad
+
+monitoring.enabled: true
+
+output.elasticsearch:
+  hosts: ["https://elasticsearch1.elasticsearch:9200", "https://elasticsearch2.elasticsearch:9200", "https://elasticsearch3.elasticsearch:9200"]
+  username: ${BEATS_USERNAME}
+  password: ${BEATS_PASSWORD}
+  ssl.enabled: true
+  ssl.verification_mode: certificate
+  ssl.certificate_authorities: [ "${CONFIG_DIR}/ca.crt" ]
+
+logging.to_files: false
+# setup.kibana: "https://35.244.36.129:5601"

@@ -25,9 +25,11 @@ sed -i '/ELASTIC_SERVICE_ACCOUNT_TOKEN/d' .env
 sleep 2
 echo 'ELASTIC_SERVICE_ACCOUNT_TOKEN='${PARSED_TOKEN[2]} >> .env
 
-# bin/elasticsearch-reset-password -u kibana_system -a -s -b --url "https://0.0.0.0:9200"
+# docker exec elasticsearch1.elasticsearch /bin/sh -- bin/elasticsearch-reset-password -u kibana_system -a -s -b --url "https://0.0.0.0:9200"
+docker exec elasticsearch1.elasticsearch /bin/sh -- bin/elasticsearch-reset-password -u beats_system -a -s -b --url "https://0.0.0.0:9200"
 
 ###########################################
 
 # Step 5 - Starting Kibana
 docker compose -f docker-compose.production.yml up -d kibana
+docker compose -f docker-compose.production.yml up -d heartbeat

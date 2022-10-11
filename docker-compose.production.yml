@@ -232,6 +232,36 @@ services:
       - elk
     depends_on:
       - elasticsearch1.elasticsearch
+
+  heartbeat:
+    container_name: heartbeat
+    hostname: heartbeat
+    build:
+      context: heartbeat/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    command:
+      # Log to stderr.
+      - -e
+      # Disable config file permissions checks. Allows mounting
+      # 'config/heartbeat.yml' even if it's not owned by root.
+      # see: https://www.elastic.co/guide/en/beats/libbeat/current/config-file-permissions.html
+      - --strict.perms=false
+    volumes:
+      - ./heartbeat/config/heartbeat.yml:${HEARTBEAT_DIR}/heartbeat.yml:ro,Z
+      - ./monitors.d:${HEARTBEAT_DIR}/monitors.d
+    environment:
+      CONFIG_DIR: ${HEARTBEAT_DIR}/config
+      BEATS_USERNAME: ${ELASTIC_USERNAME}
+      BEATS_PASSWORD: ${ELASTIC_PASSWORD}
+    secrets:
+      - source: ca.crt
+        target: ${HEARTBEAT_DIR}/config/ca.crt
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch1.elasticsearch
+
 networks:
   elk:
     driver: bridge

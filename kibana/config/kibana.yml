@@ -4,7 +4,7 @@ server.host: 0.0.0.0
 server.publicBaseUrl: "${KIBANA_URL}"
 
 # Elasticsearch settings
-elasticsearch.hosts: [ "https://elasticsearch1.elasticsearch:9200"]
+elasticsearch.hosts: [ "https://elasticsearch1.elasticsearch:9200", "https://elasticsearch2.elasticsearch:9200", "https://elasticsearch3.elasticsearch:9200"]
 elasticsearch.ssl.certificateAuthorities: [ "${CONFIG_DIR}/ca.crt" ]
 elasticsearch.ssl.verificationMode: certificate
 elasticsearch.username: "${KIBANA_USERNAME}"
@@ -20,7 +20,6 @@ xpack.security.encryptionKey: "${ENCRYPTION_KEY}"
 xpack.reporting.encryptionKey: "${ENCRYPTION_KEY}"
 
 # SSL settings
-
 server.ssl.enabled: true
 server.ssl.certificate: "${CONFIG_DIR}/kibana.crt"
 server.ssl.key: "${CONFIG_DIR}/kibana.key"
